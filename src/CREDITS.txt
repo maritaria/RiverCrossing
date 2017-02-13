@@ -1,3 +1,0 @@
-java source code in the practicum package was orginally written by Mark Timmer
-
-extended by Axel Belinfante to produce output that drives the visualization
