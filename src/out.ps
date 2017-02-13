@@ -1,0 +1,2175 @@
+%!PS-Adobe-3.0
+%%BoundingBox: 38 24 574 768
+%%Title: Enscript Output
+%%For: axel
+%%Creator: GNU enscript 1.6.4
+%%CreationDate: Wed Mar 20 10:00:15 2013
+%%Orientation: Portrait
+%%Pages: (atend)
+%%DocumentMedia: Letter 612 792 0 () ()
+%%DocumentNeededResources: (atend)
+%%EndComments
+%%BeginProlog
+%%BeginResource: procset Enscript-Prolog 1.6 4
+%
+% Procedures.
+%
+
+/_S {	% save current state
+  /_s save def
+} def
+/_R {	% restore from saved state
+  _s restore
+} def
+
+/S {	% showpage protecting gstate
+  gsave
+  showpage
+  grestore
+} bind def
+
+/MF {	% fontname newfontname -> -	make a new encoded font
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  % insert only valid encoding vectors
+  encoding_vector length 256 eq {
+    newfont /Encoding encoding_vector put
+  } if
+
+  newfontname newfont definefont pop
+} def
+
+/MF_PS { % fontname newfontname -> -	make a new font preserving its enc
+  /newfontname exch def
+  /fontname exch def
+
+  /fontdict fontname findfont def
+  /newfont fontdict maxlength dict def
+
+  fontdict {
+    exch
+    dup /FID eq {
+      % skip FID pair
+      pop pop
+    } {
+      % copy to the new font dictionary
+      exch newfont 3 1 roll put
+    } ifelse
+  } forall
+
+  newfont /FontName newfontname put
+
+  newfontname newfont definefont pop
+} def
+
+/SF { % fontname width height -> -	set a new font
+  /height exch def
+  /width exch def
+
+  findfont
+  [width 0 0 height 0 0] makefont setfont
+} def
+
+/SUF { % fontname width height -> -	set a new user font
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF
+  /F-gs-user-font width height SF
+} def
+
+/SUF_PS { % fontname width height -> -	set a new user font preserving its enc
+  /height exch def
+  /width exch def
+
+  /F-gs-user-font MF_PS
+  /F-gs-user-font width height SF
+} def
+
+/M {moveto} bind def
+/s {show} bind def
+
+/Box {	% x y w h -> -			define box path
+  /d_h exch def /d_w exch def /d_y exch def /d_x exch def
+  d_x d_y  moveto
+  d_w 0 rlineto
+  0 d_h rlineto
+  d_w neg 0 rlineto
+  closepath
+} def
+
+/bgs {	% x y height blskip gray str -> -	show string with bg color
+  /str exch def
+  /gray exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    gray setgray
+    fill
+  grestore
+  x y M str s
+} def
+
+/bgcs { % x y height blskip red green blue str -> -  show string with bg color
+  /str exch def
+  /blue exch def
+  /green exch def
+  /red exch def
+  /blskip exch def
+  /height exch def
+  /y exch def
+  /x exch def
+
+  gsave
+    x y blskip sub str stringwidth pop height Box
+    red green blue setrgbcolor
+    fill
+  grestore
+  x y M str s
+} def
+
+% Highlight bars.
+/highlight_bars {	% nlines lineheight output_y_margin gray -> -
+  gsave
+    setgray
+    /ymarg exch def
+    /lineheight exch def
+    /nlines exch def
+
+    % This 2 is just a magic number to sync highlight lines to text.
+    0 d_header_y ymarg sub 2 sub translate
+
+    /cw d_output_w cols div def
+    /nrows d_output_h ymarg 2 mul sub lineheight div cvi def
+
+    % for each column
+    0 1 cols 1 sub {
+      cw mul /xp exch def
+
+      % for each rows
+      0 1 nrows 1 sub {
+        /rn exch def
+        rn lineheight mul neg /yp exch def
+        rn nlines idiv 2 mod 0 eq {
+	  % Draw highlight bar.  4 is just a magic indentation.
+	  xp 4 add yp cw 8 sub lineheight neg Box fill
+	} if
+      } for
+    } for
+
+  grestore
+} def
+
+% Line highlight bar.
+/line_highlight {	% x y width height gray -> -
+  gsave
+    /gray exch def
+    Box gray setgray fill
+  grestore
+} def
+
+% Column separator lines.
+/column_lines {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h translate
+    /cw d_output_w cols div def
+    1 1 cols 1 sub {
+      cw mul 0 moveto
+      0 d_output_h rlineto stroke
+    } for
+  grestore
+} def
+
+% Column borders.
+/column_borders {
+  gsave
+    .1 setlinewidth
+    0 d_footer_h moveto
+    0 d_output_h rlineto
+    d_output_w 0 rlineto
+    0 d_output_h neg rlineto
+    closepath stroke
+  grestore
+} def
+
+% Do the actual underlay drawing
+/draw_underlay {
+  ul_style 0 eq {
+    ul_str true charpath stroke
+  } {
+    ul_str show
+  } ifelse
+} def
+
+% Underlay
+/underlay {	% - -> -
+  gsave
+    0 d_page_h translate
+    d_page_h neg d_page_w atan rotate
+
+    ul_gray setgray
+    ul_font setfont
+    /dw d_page_h dup mul d_page_w dup mul add sqrt def
+    ul_str stringwidth pop dw exch sub 2 div ul_h_ptsize -2 div moveto
+    draw_underlay
+  grestore
+} def
+
+/user_underlay {	% - -> -
+  gsave
+    ul_x ul_y translate
+    ul_angle rotate
+    ul_gray setgray
+    ul_font setfont
+    0 0 ul_h_ptsize 2 div sub moveto
+    draw_underlay
+  grestore
+} def
+
+% Page prefeed
+/page_prefeed {		% bool -> -
+  statusdict /prefeed known {
+    statusdict exch /prefeed exch put
+  } {
+    pop
+  } ifelse
+} def
+
+% Wrapped line markers
+/wrapped_line_mark {	% x y charwith charheight type -> -
+  /type exch def
+  /h exch def
+  /w exch def
+  /y exch def
+  /x exch def
+
+  type 2 eq {
+    % Black boxes (like TeX does)
+    gsave
+      0 setlinewidth
+      x w 4 div add y M
+      0 h rlineto w 2 div 0 rlineto 0 h neg rlineto
+      closepath fill
+    grestore
+  } {
+    type 3 eq {
+      % Small arrows
+      gsave
+        .2 setlinewidth
+        x w 2 div add y h 2 div add M
+        w 4 div 0 rlineto
+        x w 4 div add y lineto stroke
+
+        x w 4 div add w 8 div add y h 4 div add M
+        x w 4 div add y lineto
+	w 4 div h 8 div rlineto stroke
+      grestore
+    } {
+      % do nothing
+    } ifelse
+  } ifelse
+} def
+
+% EPSF import.
+
+/BeginEPSF {
+  /b4_Inc_state save def    		% Save state for cleanup
+  /dict_count countdictstack def	% Count objects on dict stack
+  /op_count count 1 sub def		% Count objects on operand stack
+  userdict begin
+  /showpage { } def
+  0 setgray 0 setlinecap
+  1 setlinewidth 0 setlinejoin
+  10 setmiterlimit [ ] 0 setdash newpath
+  /languagelevel where {
+    pop languagelevel
+    1 ne {
+      false setstrokeadjust false setoverprint
+    } if
+  } if
+} bind def
+
+/EndEPSF {
+  count op_count sub { pos } repeat	% Clean up stacks
+  countdictstack dict_count sub { end } repeat
+  b4_Inc_state restore
+} bind def
+
+% Check PostScript language level.
+/languagelevel where {
+  pop /gs_languagelevel languagelevel def
+} {
+  /gs_languagelevel 1 def
+} ifelse
+%%EndResource
+%%BeginResource: procset Enscript-Encoding-88591 1.6 4
+/encoding_vector [
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclam       	/quotedbl     	/numbersign   	
+/dollar       	/percent      	/ampersand    	/quoteright   	
+/parenleft    	/parenright   	/asterisk     	/plus         	
+/comma        	/hyphen       	/period       	/slash        	
+/zero         	/one          	/two          	/three        	
+/four         	/five         	/six          	/seven        	
+/eight        	/nine         	/colon        	/semicolon    	
+/less         	/equal        	/greater      	/question     	
+/at           	/A            	/B            	/C            	
+/D            	/E            	/F            	/G            	
+/H            	/I            	/J            	/K            	
+/L            	/M            	/N            	/O            	
+/P            	/Q            	/R            	/S            	
+/T            	/U            	/V            	/W            	
+/X            	/Y            	/Z            	/bracketleft  	
+/backslash    	/bracketright 	/asciicircum  	/underscore   	
+/quoteleft    	/a            	/b            	/c            	
+/d            	/e            	/f            	/g            	
+/h            	/i            	/j            	/k            	
+/l            	/m            	/n            	/o            	
+/p            	/q            	/r            	/s            	
+/t            	/u            	/v            	/w            	
+/x            	/y            	/z            	/braceleft    	
+/bar          	/braceright   	/tilde        	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/.notdef      	/.notdef      	/.notdef      	/.notdef      	
+/space        	/exclamdown   	/cent         	/sterling     	
+/currency     	/yen          	/brokenbar    	/section      	
+/dieresis     	/copyright    	/ordfeminine  	/guillemotleft	
+/logicalnot   	/hyphen       	/registered   	/macron       	
+/degree       	/plusminus    	/twosuperior  	/threesuperior	
+/acute        	/mu           	/paragraph    	/bullet       	
+/cedilla      	/onesuperior  	/ordmasculine 	/guillemotright	
+/onequarter   	/onehalf      	/threequarters	/questiondown 	
+/Agrave       	/Aacute       	/Acircumflex  	/Atilde       	
+/Adieresis    	/Aring        	/AE           	/Ccedilla     	
+/Egrave       	/Eacute       	/Ecircumflex  	/Edieresis    	
+/Igrave       	/Iacute       	/Icircumflex  	/Idieresis    	
+/Eth          	/Ntilde       	/Ograve       	/Oacute       	
+/Ocircumflex  	/Otilde       	/Odieresis    	/multiply     	
+/Oslash       	/Ugrave       	/Uacute       	/Ucircumflex  	
+/Udieresis    	/Yacute       	/Thorn        	/germandbls   	
+/agrave       	/aacute       	/acircumflex  	/atilde       	
+/adieresis    	/aring        	/ae           	/ccedilla     	
+/egrave       	/eacute       	/ecircumflex  	/edieresis    	
+/igrave       	/iacute       	/icircumflex  	/idieresis    	
+/eth          	/ntilde       	/ograve       	/oacute       	
+/ocircumflex  	/otilde       	/odieresis    	/divide       	
+/oslash       	/ugrave       	/uacute       	/ucircumflex  	
+/udieresis    	/yacute       	/thorn        	/ydieresis    	
+] def
+%%EndResource
+%%EndProlog
+%%BeginSetup
+%%IncludeResource: font Courier-Bold
+%%IncludeResource: font Courier
+/HFpt_w 10 def
+/HFpt_h 10 def
+/Courier-Bold /HF-gs-font MF
+/HF /HF-gs-font findfont [HFpt_w 0 0 HFpt_h 0 0] makefont def
+/Courier /F-gs-font MF
+/F-gs-font 10 10 SF
+/#copies 1 def
+% Pagedevice definitions:
+gs_languagelevel 1 gt {
+  <<
+    /PageSize [612 792] 
+  >> setpagedevice
+} if
+%%BeginResource: procset Enscript-Header-simple 1.6 4
+
+/do_header {	% print default simple header
+  gsave
+    d_header_x d_header_y HFpt_h 3 div add translate
+
+    HF setfont
+    user_header_p {
+      5 0 moveto user_header_left_str show
+
+      d_header_w user_header_center_str stringwidth pop sub 2 div
+      0 moveto user_header_center_str show
+
+      d_header_w user_header_right_str stringwidth pop sub 5 sub
+      0 moveto user_header_right_str show
+    } {
+      5 0 moveto fname show
+      45 0 rmoveto fmodstr show
+      45 0 rmoveto pagenumstr show
+    } ifelse
+
+  grestore
+} def
+%%EndResource
+/d_page_w 536 def
+/d_page_h 744 def
+/d_header_x 0 def
+/d_header_y 729 def
+/d_header_w 536 def
+/d_header_h 15 def
+/d_footer_x 0 def
+/d_footer_y 0 def
+/d_footer_w 536 def
+/d_footer_h 0 def
+/d_output_w 536 def
+/d_output_h 729 def
+/cols 1 def
+%%EndSetup
+%%Page: (1) 1
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (practicum/Model.java.template) def
+/fdir (practicum/) def
+/ftail (Model.java.template) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:21:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package practicum;) s
+5 694 M
+(import java.util.Vector;) s
+5 683 M
+(/**) s
+5 672 M
+( * This class models the location of the cabbage, goat, wolf and farmer.) s
+5 661 M
+( * Moreover, it contains the logic that states when a move is valid and) s
+5 650 M
+( * when it is safe.) s
+5 639 M
+( */) s
+5 628 M
+(public class Model {) s
+5 617 M
+(  public enum Move {) s
+5 606 M
+(    WOLF\("Wolf"\),) s
+5 595 M
+(    CABBAGE\("Cabbage"\),) s
+5 584 M
+(    GOAT\("Goat"\),) s
+5 573 M
+(    FARMER\("Farmer"\),) s
+5 562 M
+(    NOTHING\(""\);) s
+5 551 M
+(    private final String name;) s
+5 540 M
+(    private Move\(String name\) {) s
+5 529 M
+(      this.name = name;) s
+5 518 M
+(    }) s
+5 507 M
+(    public String toString\(\) {) s
+5 496 M
+(      return name;) s
+5 485 M
+(    }) s
+5 474 M
+(  }) s
+5 463 M
+(  public enum Result {) s
+5 452 M
+(    FINISHED,) s
+5 441 M
+(    EATEN,) s
+5 430 M
+(    RETRY,) s
+5 419 M
+(    NORMALMOVE,) s
+5 408 M
+(    INIT,) s
+5 397 M
+(  }) s
+5 386 M
+(  public static final boolean LEFT       = false;) s
+5 375 M
+(  public static final boolean RIGHT      = true;  ) s
+5 364 M
+(  private Move[] allItems = {) s
+5 353 M
+(    Move.WOLF,) s
+5 342 M
+(    Move.CABBAGE,) s
+5 331 M
+(    Move.GOAT,) s
+5 320 M
+(    Move.FARMER,) s
+5 309 M
+(  }; ) s
+5 298 M
+(  /**) s
+5 287 M
+(   * This array models the location of all items including the farmer.) s
+5 276 M
+(   * The enumeration constants Move.WOLF, Move.CABBAGE, Move.GOAT and Move.FARMER) s
+5 265 M
+(   * can be used as indices of the corresponding items using the ordinal\(\) methods,) s
+5 254 M
+(   * as in Move.WOLF.ordinal\(\).) s
+5 243 M
+(   * Moreover, the constants LEFT and RIGHT are used to specify whether an item is) s
+5 232 M
+(   * on the left or the right side of the river.) s
+5 221 M
+(   * For instance, if items[Move.GOAT.ordinal\(\)] == RIGHT) s
+5 210 M
+(   * this means that the goat is on the right side of the river.) s
+5 199 M
+(   */) s
+5 188 M
+(  private boolean[] items;) s
+5 177 M
+(  private boolean[] initialState;) s
+5 166 M
+( /**) s
+5 155 M
+(   * Variable sleeptime indicates how long methods showUnsafeMove, showInvalidMove) s
+5 144 M
+(   * and * showInitialState must sleep, to give nicer visualization.) s
+5 133 M
+(   */) s
+5 122 M
+(  private int sleeptime;) s
+5 111 M
+(  /**) s
+5 100 M
+(   * Constructor, initialising the model.) s
+5 89 M
+(   * Also, the initial state is saved, such that we can later on reset.) s
+5 78 M
+(   */) s
+5 67 M
+(  public Model\(boolean[] initial, int sleeptime\) {) s
+5 56 M
+(    this.items        = initial;) s
+5 45 M
+(    this.initialState = initial.clone\(\);) s
+5 34 M
+(    this.sleeptime = sleeptime;) s
+5 23 M
+(    showInitialState\(false\);) s
+5 12 M
+(  }) s
+_R
+S
+%%Page: (2) 2
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 2 def
+/fname (practicum/Model.java.template) def
+/fdir (practicum/) def
+/ftail (Model.java.template) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:21:00 2012) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(  public boolean inInitialState\(\) {) s
+5 705 M
+(    for \(int i=0; i <= 3; i++\) {) s
+5 694 M
+(        if \(items[i] != initialState[i]\)) s
+5 683 M
+(             return false;) s
+5 672 M
+(    }) s
+5 661 M
+(    return true;) s
+5 650 M
+(  }) s
+5 639 M
+(  /**) s
+5 628 M
+(   * Resets the model to the initial state.) s
+5 617 M
+(   */ ) s
+5 606 M
+(  public void reset\(\) {) s
+5 595 M
+(    this.items = initialState.clone\(\);) s
+5 584 M
+(    showInitialState\(true\);) s
+5 573 M
+(  }) s
+5 562 M
+(  /**) s
+5 551 M
+(   * Computes whether the current state is the final state.) s
+5 540 M
+(   * This is the case when wolf, goat and cabbage are on the right side on the river.) s
+5 529 M
+(   */) s
+5 518 M
+(  public boolean finished\(\) {) s
+5 496 M
+(        // implement the body of this method) s
+5 474 M
+(  }) s
+5 463 M
+(  /**) s
+5 452 M
+(   * Computes whether the given move is valid.) s
+5 441 M
+(   * The move can be Move.CABBAGE, Move.GOAT, Move.WOLF or Move.NOTHING,) s
+5 430 M
+(   * denoting what the farmer should move.) s
+5 419 M
+(   * Moving only the farmer is always valid, while an item can only be moved) s
+5 408 M
+(   * when it is on the same side of the river as the farmer.) s
+5 397 M
+(   */) s
+5 386 M
+(  public boolean validMove\(Move move\) { ) s
+5 364 M
+(        // implement the body of this method) s
+5 342 M
+(  }) s
+5 331 M
+(  /**) s
+5 320 M
+(   * Computes whether the given move is safe.) s
+5 309 M
+(   * A move is unsafe when afterwards either the goat and the cabbage are unsupervised) s
+5 298 M
+(   * on the same side, or when the goat and the wolf are unsupervised on the same side.) s
+5 287 M
+(   */) s
+5 276 M
+(  public boolean safeMove\(Move move\) {) s
+5 254 M
+(        // implement the body of this method) s
+5 232 M
+(  }) s
+5 221 M
+(  /**) s
+5 210 M
+(   * Execute the given move.) s
+5 199 M
+(   * This updates the information about who is at what side of the river.) s
+5 188 M
+(   */) s
+5 177 M
+(  public void doMove\(Move move\) {) s
+5 155 M
+(        // implement the body of this method) s
+5 133 M
+(  }) s
+5 122 M
+( /**) s
+5 111 M
+(   * Sleep sleeptime) s
+5 100 M
+(   */) s
+5 89 M
+(  private void sleep\(\) {) s
+5 78 M
+(    try {) s
+5 67 M
+(      Thread.sleep\(sleeptime\);) s
+5 56 M
+(    } catch \(java.lang.InterruptedException e\) {) s
+5 45 M
+(    }) s
+5 34 M
+(  }) s
+_R
+S
+%%Page: (3) 3
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 3 def
+/fname (practicum/Model.java.template) def
+/fdir (practicum/) def
+/ftail (Model.java.template) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:21:00 2012) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+( /**) s
+5 705 M
+(   * Methods showUnsafeMove, showInvalidMove and showInitialState) s
+5 694 M
+(   * provide output that can be used for visualization.) s
+5 683 M
+(   */) s
+5 672 M
+(  private void showUnsafeMove\(Move move\) {) s
+5 661 M
+(    doMove\(move\);) s
+5 650 M
+(    System.err.println\("[" + getState\(\) + "]"\);) s
+5 639 M
+(    sleep\(\);) s
+5 628 M
+(    doMove\(move\);) s
+5 617 M
+(  }) s
+5 606 M
+(  private void showInvalidMove\(Move move\) {) s
+5 595 M
+(    Vector<Move> hl = new Vector<Move>\(\);) s
+5 584 M
+(    hl.add\(move\);) s
+5 573 M
+(    hl.add\(Move.FARMER\);) s
+5 562 M
+(    System.err.println\("[" + getState\(hl\) + "]"\);) s
+5 551 M
+(    sleep\(\);) s
+5 540 M
+(  }) s
+5 529 M
+(  private void showInitialState\(boolean doDelay\) {) s
+5 518 M
+(    if \(doDelay\)) s
+5 507 M
+(      sleep\(\);) s
+5 496 M
+(    System.err.println\("[" + getState\(\) + "]"\);) s
+5 485 M
+(  }) s
+5 474 M
+(  /**) s
+5 463 M
+(   * This method performs the move provided by the parameter) s
+5 452 M
+(   * in case it is both valid and safe.) s
+5 441 M
+(   * Its result is one of the following four options:) s
+5 430 M
+(   *   Result.RETRY      - the move was not valid \(and thus was not performed\)) s
+5 419 M
+(   *   Result.EATEN      - the move was not safe \(and thus was not performed\)) s
+5 408 M
+(   *   Result.FINISHED   - the move was valid and safe, and led to the final state) s
+5 397 M
+(   *   Result.NORMALMOVE - the move was valid and safe, and did not lead to ) s
+5 386 M
+(   *                       the final state) s
+5 375 M
+(   */) s
+5 364 M
+(  public Result doTransition\(Move move\) {) s
+5 342 M
+(        // implement the body of this method \(using validMove\(\), safeMove\(\),) s
+5 331 M
+(        // doMove\(\), showInvalidMove\(\), and showUnsafeMove\(\) \)) s
+5 320 M
+(  }) s
+5 309 M
+(  /**) s
+5 298 M
+(   * Provides a String representation of the current state.) s
+5 287 M
+(   */) s
+5 276 M
+(  public String getState\(\) {) s
+5 265 M
+(    return getState\(new Vector<Move>\(\)\);) s
+5 254 M
+(  }) s
+5 243 M
+(  private String getState\(Vector<Move> highLight\) {) s
+5 232 M
+(    String left = "";) s
+5 221 M
+(    String right = "";) s
+5 210 M
+(    for\(Move m: allItems\) {) s
+5 199 M
+(      boolean hl = highLight.contains\(m\);) s
+5 188 M
+(      String nm = nameOf\(m, hl\);) s
+5 177 M
+(      if \(items[m.ordinal\(\)] == LEFT\)) s
+5 166 M
+(          left += nm + " ";) s
+5 155 M
+(        else if \(items[m.ordinal\(\)] == RIGHT\)) s
+5 144 M
+(          right += nm + " ";) s
+5 133 M
+(    }) s
+5 122 M
+(    return left + "|RIVER| " + right;) s
+5 111 M
+(  }) s
+5 100 M
+(  private String nameOf\(Move m, boolean hl\) {) s
+5 89 M
+(    if \(hl\)) s
+5 78 M
+(      return m.toString\(\).toUpperCase\(\);) s
+5 67 M
+(    else) s
+5 56 M
+(      return m.toString\(\);) s
+5 45 M
+(  }) s
+5 34 M
+(}) s
+_R
+S
+%%Page: (1) 4
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (practicum/Practicum.java) def
+/fdir (practicum/) def
+/ftail (Practicum.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 13:29:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package practicum;) s
+5 694 M
+(import java.io.*;) s
+5 683 M
+(import java.util.*;) s
+5 672 M
+(/**) s
+5 661 M
+( * This class creates a model and instantiates the user interface.) s
+5 650 M
+( * Initially, all items and the farmer are on the left side of the river.) s
+5 639 M
+( */) s
+5 628 M
+(public class Practicum {) s
+5 617 M
+(  /**) s
+5 606 M
+(   * Parse command line arguments and create model.) s
+5 595 M
+(   * One command line argument is expected: a timeout value \(in milliseconds\).) s
+5 584 M
+(   * The timeout value can be positive and negative.) s
+5 573 M
+(   * If positive, an instance of class InitialReminder will be created --) s
+5 562 M
+(   * it prints a message once every  timout  number of milliseconds,) s
+5 551 M
+(   * when the Model is in the initial state.) s
+5 540 M
+(   * If negative, no such instance is created.) s
+5 529 M
+(   * The default timeout is negative.) s
+5 518 M
+(   * The absolute value of timeout \(ok, 2/3 of it\) is used by the Model class to delay) s
+5 507 M
+(   * outputs for animation/visualization, ) s
+5 496 M
+(   */) s
+5 485 M
+(  public static void main \(String[] args\) {) s
+5 474 M
+(    boolean[] initial = { Model.LEFT, Model.LEFT, Model.LEFT, Model.LEFT };) s
+5 463 M
+(    int miliseconds = -1*750; // negative: by default suppress the 'init!' messages) s
+5 452 M
+(    boolean showInit = true;) s
+5 441 M
+(    boolean human = true;) s
+5 430 M
+(    for\(int i=0; i < args.length; i++\) {) s
+5 419 M
+(      if \(args[i].equals\("-h"\)\)) s
+5 408 M
+(            human = true;) s
+5 397 M
+(      else if \(args[i].equals\("-t"\)\)) s
+5 386 M
+(            human = false;) s
+5 375 M
+(      else if \(args.length == i+1\) {) s
+5 364 M
+(            try {) s
+5 353 M
+(              miliseconds = Integer.parseInt\(args[i]\);) s
+5 342 M
+(            } catch\(NumberFormatException nfe\) {) s
+5 331 M
+(            System.err.println\("ignoring invalid timeout argument: \\""+args[i]+"\\""+) s
+5 320 M
+(                "; using default timeout \("+miliseconds+"\)"\);) s
+5 309 M
+(            }) s
+5 298 M
+(      } else) s
+5 287 M
+(        System.err.println\("ignoring argument: \\""+args[i]+"\\""\);) s
+5 276 M
+(    }) s
+5 265 M
+(    if \(miliseconds < 0\) {) s
+5 254 M
+(        miliseconds =  -miliseconds;) s
+5 243 M
+(        showInit = false;) s
+5 232 M
+(    }) s
+5 221 M
+(    Model model = new Model\(initial, \(2*miliseconds\)/3\);) s
+5 210 M
+(    UI ui;) s
+5 199 M
+(    if\(human\)) s
+5 188 M
+(        ui = new HumanUI\(model\);) s
+5 177 M
+(    else) s
+5 166 M
+(        ui = new TorXUI\(model\);) s
+5 155 M
+(    new Engine\(model, ui\).play\(miliseconds, showInit\);) s
+5 144 M
+(  }) s
+5 133 M
+(}) s
+5 122 M
+(/**) s
+5 111 M
+( * This class is the game engine.) s
+5 100 M
+( * It uses a UI to interact with the user or the tester.) s
+5 89 M
+( */) s
+5 78 M
+(class Engine {) s
+5 67 M
+(  Model model;) s
+5 56 M
+(  UI ui;) s
+5 45 M
+(  /**) s
+5 34 M
+(   * Constructs an engine that uses a UI.) s
+5 23 M
+(   */) s
+5 12 M
+(  public Engine\(Model model, UI ui\){) s
+_R
+S
+%%Page: (2) 5
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 2 def
+/fname (practicum/Practicum.java) def
+/fdir (practicum/) def
+/ftail (Practicum.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 13:29:00 2012) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(    this.model = model;) s
+5 705 M
+(    this.ui = ui;) s
+5 694 M
+(  }) s
+5 683 M
+(  /**) s
+5 672 M
+(   * Plays the \(infinite\) game.) s
+5 661 M
+(   *) s
+5 650 M
+(   * First, the user is welcomed to the game. Then, indefinitely) s
+5 639 M
+(   * the following happens:) s
+5 628 M
+(   *  \(1\) the current state is presented) s
+5 617 M
+(   *  \(2\) the user is asked which item to transport) s
+5 606 M
+(   *  \(3\) the choice is parsed to the representation that is used by the model) s
+5 595 M
+(   *  \(4\) the move is performed on the model) s
+5 584 M
+(   *  \(5\) the result of the move is given to the user) s
+5 573 M
+(   */) s
+5 562 M
+(  public void play\(int miliseconds, boolean showInit\) {) s
+5 551 M
+(    ui.welcome\("Welcome to the wolf-goat-cabbage puzzle!"\);) s
+5 540 M
+(    InitialReminder ir = null;) s
+5 529 M
+(    if \(showInit\) {) s
+5 518 M
+(        ir = new InitialReminder\(model, ui, miliseconds\);) s
+5 507 M
+(    }) s
+5 496 M
+(    boolean stop = false;) s
+5 485 M
+(    while\(!stop\) {) s
+5 474 M
+(      ui.presentState\("The current state: " + model.getState\(\)\);) s
+5 463 M
+(      Model.Move move = ui.getMove\(ir, "Which item do you want to transport?"\);) s
+5 452 M
+(      ui.diag\("have choice: "+move.toString\(\)\);) s
+5 441 M
+(      ui.diag\("about to do transition"\);) s
+5 430 M
+(      Model.Result result = model.doTransition\(move\);   ) s
+5 419 M
+(      ui.diag\("done transition"\);) s
+5 408 M
+(      ui.reportResult\(result\);) s
+5 397 M
+(      if\(result == Model.Result.FINISHED\) {) s
+5 386 M
+(        model.reset\(\);) s
+5 375 M
+(} } } }) s
+5 364 M
+(/**) s
+5 353 M
+( * This class takes care of outputting the action init! when the model) s
+5 342 M
+( * is in the initial state and no action was provided for some number of miliseconds.) s
+5 331 M
+( */) s
+5 320 M
+(class InitialReminder {) s
+5 309 M
+(  Timer timer;) s
+5 298 M
+(  Model model;) s
+5 287 M
+(  UI ui;) s
+5 276 M
+(  int miliseconds;) s
+5 254 M
+(  public InitialReminder\(Model model, UI ui, int miliseconds\) {) s
+5 243 M
+(    this.miliseconds = miliseconds;) s
+5 232 M
+(    this.model = model;) s
+5 221 M
+(    this.ui = ui;) s
+5 210 M
+(    set\(\);) s
+5 199 M
+(  }) s
+5 188 M
+(  public void set\(\) {) s
+5 177 M
+(    timer = new Timer\(\);) s
+5 166 M
+(    timer.scheduleAtFixedRate\(new Reminder\(\), miliseconds, miliseconds\);) s
+5 155 M
+(  }) s
+5 144 M
+(  public void reset\(\) {) s
+5 133 M
+(    ui.diag\("cancelling timer..."\);) s
+5 122 M
+(    timer.cancel\(\);) s
+5 111 M
+(    set\(\);) s
+5 100 M
+(    ui.diag\("done cancelling timer"\);) s
+5 89 M
+(  }) s
+5 67 M
+(  class Reminder extends TimerTask{) s
+5 56 M
+(    public void run \(\) {) s
+5 45 M
+(      ui.diag\("timertask"\);) s
+5 34 M
+(      if \(model.inInitialState\(\)\) {) s
+5 23 M
+(              ui.reportResult\(Model.Result.INIT\);) s
+5 12 M
+(} } } }) s
+_R
+S
+%%Page: (1) 6
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (practicum/UI.java) def
+/fdir (practicum/) def
+/ftail (UI.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:02:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package practicum;) s
+5 694 M
+(import java.io.*;) s
+5 683 M
+(import java.util.*;) s
+5 672 M
+(import java.text.SimpleDateFormat;) s
+5 650 M
+(/**) s
+5 639 M
+( * This abstract class implements general functionality of the user interface.) s
+5 628 M
+( * It needs to receive a model to work with.) s
+5 617 M
+( * Methods getMove\(\) and reportResult\(\) are abstract.) s
+5 606 M
+( */) s
+5 595 M
+(public abstract class UI {) s
+5 584 M
+(  Model model;) s
+5 573 M
+(  SimpleDateFormat fmt;) s
+5 551 M
+(  /**) s
+5 540 M
+(   * Constructs a user interface based on a model.) s
+5 529 M
+(   */) s
+5 518 M
+(  public UI\(Model model\){) s
+5 507 M
+(    this.model = model;) s
+5 496 M
+(    fmt = new SimpleDateFormat\("yyyy-MM-dd'T'HH:mm:ss.SSSZ"\);) s
+5 485 M
+(  }) s
+5 474 M
+(  /**) s
+5 463 M
+(   * Welcome the user to the game.) s
+5 452 M
+(   */) s
+5 441 M
+(  public void welcome\(String s\) {) s
+5 430 M
+(    errln\(s\);) s
+5 419 M
+(  }) s
+5 408 M
+(  /**) s
+5 397 M
+(   * Present the current state to the user.) s
+5 386 M
+(   */) s
+5 375 M
+(  public void presentState\(String s\) {) s
+5 364 M
+(    errln\("\\n"+s\);) s
+5 353 M
+(  }) s
+5 342 M
+(  /**) s
+5 331 M
+(   * Ask the user which item to transport.) s
+5 320 M
+(   * Needs UI-method specific implementation.) s
+5 309 M
+(   */) s
+5 298 M
+(  public abstract Model.Move getMove\(InitialReminder ir, String prompt\);) s
+5 287 M
+(  /**) s
+5 276 M
+(   * Report the result of the move to the user.) s
+5 265 M
+(   * Needs UI-method specific implementation.) s
+5 254 M
+(   */) s
+5 243 M
+(  public abstract void reportResult\(Model.Result result\);) s
+5 232 M
+(  /**) s
+5 221 M
+(   * Report diagnostic message to the user.) s
+5 210 M
+(   */) s
+5 199 M
+(  public void diag\(String s\) {) s
+5 188 M
+(    report\(s\);) s
+5 177 M
+(  }) s
+5 166 M
+(  protected void nooutput\(String s\) {) s
+5 155 M
+(    report\("State: ["+ model.getState\(\) + "] nooutput: "+s\);) s
+5 144 M
+(  }) s
+5 133 M
+(  protected void errln\(String s\) {) s
+5 122 M
+(    System.err.println\(s\);) s
+5 111 M
+(    System.err.flush\(\);) s
+5 100 M
+(  }) s
+5 89 M
+(  protected void report\(long now, String s\) {) s
+5 78 M
+(    errln\(fmt.format\(now\)+" "+s\);               ) s
+5 67 M
+(  }) s
+5 56 M
+(  protected void report\(String s\) {) s
+5 45 M
+(    long now = System.currentTimeMillis\(\);) s
+5 34 M
+(    errln\(fmt.format\(now\)+" "+s\);               ) s
+5 23 M
+(  }) s
+5 12 M
+(}) s
+_R
+S
+%%Page: (1) 7
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (practicum/HumanUI.java) def
+/fdir (practicum/) def
+/ftail (HumanUI.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 22:42:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package practicum;) s
+5 694 M
+(import java.io.*;) s
+5 683 M
+(import java.util.*;) s
+5 672 M
+(/**) s
+5 661 M
+( * This class implements the user interface of the program for a human user,) s
+5 650 M
+( * by extending the general UI class.) s
+5 639 M
+( */) s
+5 628 M
+(public class HumanUI extends UI {) s
+5 617 M
+(  Scanner scanner = new Scanner\(System.in\);) s
+5 606 M
+(  /**) s
+5 595 M
+(   * Constructs a user interface based on a model.) s
+5 584 M
+(   */) s
+5 573 M
+(  public HumanUI\(Model model\){) s
+5 562 M
+(    super\(model\);) s
+5 551 M
+(  }) s
+5 540 M
+(  /**) s
+5 529 M
+(   * Ask the user which item to transport.) s
+5 518 M
+(   */) s
+5 507 M
+(  public Model.Move getMove\(InitialReminder ir, String prompt\) {) s
+5 496 M
+(      String choice = "";) s
+5 485 M
+(      while \(!\(choice.equals\("c?"\) || choice.equals\("g?"\)) s
+5 474 M
+(             ||choice.equals\("w?"\) || choice.equals\("n?"\)\)\) {) s
+5 463 M
+(        errln\("\\n"+prompt \);) s
+5 452 M
+(        errln\("Type c?\(abbage\), g?\(oat\), w?\(olf\)," + "or n?\(othing\): "\);) s
+5 441 M
+(        if \(! scanner.hasNext\(\)\) // end-of-input) s
+5 430 M
+(          System.exit\(0\);) s
+5 419 M
+(        choice = scanner.next\(\);) s
+5 408 M
+(        if \(ir!=null\)) s
+5 397 M
+(          ir.reset\(\);) s
+5 386 M
+(        input\(choice\);) s
+5 375 M
+(      }) s
+5 364 M
+(      report\("have choice: "+choice\);) s
+5 353 M
+(      Model.Move move = Model.Move.NOTHING;) s
+5 342 M
+(      if \(choice.equals\("g?"\)\) move = Model.Move.GOAT;) s
+5 331 M
+(      if \(choice.equals\("c?"\)\) move = Model.Move.CABBAGE;) s
+5 320 M
+(      if \(choice.equals\("w?"\)\) move = Model.Move.WOLF;) s
+5 309 M
+(      return move;) s
+5 298 M
+(  }) s
+5 287 M
+(  /**) s
+5 276 M
+(   * Report the result of the move to the user.) s
+5 265 M
+(   */) s
+5 254 M
+(  public void reportResult\(Model.Result result\) {) s
+5 243 M
+(      if\(result == Model.Result.FINISHED\)) s
+5 232 M
+(        output\("done!"\);) s
+5 221 M
+(      else if \(result == Model.Result.EATEN\)) s
+5 210 M
+(        output\("eaten!"\);) s
+5 199 M
+(      else if \(result == Model.Result.RETRY\)) s
+5 188 M
+(        output\("retry!"\);) s
+5 177 M
+(      else if \(result == Model.Result.INIT\)) s
+5 166 M
+(        output\("init!"\);) s
+5 155 M
+(      else) s
+5 144 M
+(        nooutput\("delta"\); ) s
+5 133 M
+(  }) s
+5 122 M
+(  private void output\(String s\) {) s
+5 111 M
+(    long now = System.currentTimeMillis\(\);) s
+5 100 M
+(    System.out.println\(s\);) s
+5 89 M
+(    System.out.flush\(\);) s
+5 78 M
+(    report\(now, "State: ["+ model.getState\(\) + "] yesoutput: "+s\);) s
+5 67 M
+(  }) s
+5 56 M
+(  private void input\(String s\) {) s
+5 45 M
+(    report\("State: ["+ model.getState\(\) + "] read: "+s\);) s
+5 34 M
+(  }) s
+5 23 M
+(}) s
+_R
+S
+%%Page: (1) 8
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (practicum/TorXUI.java) def
+/fdir (practicum/) def
+/ftail (TorXUI.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 22:42:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package practicum;) s
+5 694 M
+(import java.io.*;) s
+5 683 M
+(import java.util.*;) s
+5 672 M
+(/**) s
+5 661 M
+( * This class implements the user interface of the program for testing with TorX,) s
+5 650 M
+( * by extending the general UI class.) s
+5 639 M
+( */) s
+5 628 M
+(public class TorXUI extends UI {) s
+5 617 M
+(  DataInputStream in = new DataInputStream\(System.in\);) s
+5 606 M
+(  DataOutputStream out = new DataOutputStream\(System.out\);) s
+5 595 M
+(  /**) s
+5 584 M
+(   * Constructs a user interface based on a model.) s
+5 573 M
+(   */) s
+5 562 M
+(  public TorXUI\(Model model\) {) s
+5 551 M
+(    super\(model\);) s
+5 540 M
+(  }) s
+5 529 M
+(  /**) s
+5 518 M
+(   * Ask the user which item to transport.) s
+5 507 M
+(   */) s
+5 496 M
+(  public Model.Move getMove\(InitialReminder ir, String prompt\) {) s
+5 485 M
+(    byte b = 0;) s
+5 474 M
+(    Model.Move move = null;) s
+5 463 M
+(    while\(move == null\) {) s
+5 452 M
+(        try {) s
+5 441 M
+(          b = in.readByte\(\);) s
+5 430 M
+(        } catch \(EOFException e\) { // end-of-input) s
+5 419 M
+(                System.exit\(0\);) s
+5 408 M
+(        } catch \(IOException e\) {) s
+5 397 M
+(            errln\("ioexception when reading input: "+e.getMessage\(\)\);) s
+5 386 M
+(            System.exit\(1\);) s
+5 375 M
+(        }) s
+5 364 M
+(        System.err.printf\("read %x\\n", b\);) s
+5 353 M
+(        if      \(isBitSet\(b,0\)\) move = Model.Move.NOTHING;) s
+5 342 M
+(        else if \(isBitSet\(b,1\)\) move = Model.Move.GOAT;) s
+5 331 M
+(        else if \(isBitSet\(b,2\)\) move = Model.Move.CABBAGE;) s
+5 320 M
+(        else if \(isBitSet\(b,3\)\) move = Model.Move.WOLF;) s
+5 309 M
+(        else                    errln\("unexpected input"\);) s
+5 298 M
+(        if \(ir!=null\)) s
+5 287 M
+(              ir.reset\(\);) s
+5 276 M
+(        input\(b\);) s
+5 265 M
+(    }) s
+5 254 M
+(    return move;) s
+5 243 M
+(  }) s
+5 232 M
+(  /**) s
+5 221 M
+(   * Report the result of the move to the user.) s
+5 210 M
+(   */) s
+5 199 M
+(  public void reportResult\(Model.Result result\) {) s
+5 188 M
+(      byte b = 0;) s
+5 177 M
+(      if\(result == Model.Result.FINISHED\)    output\(setBit\(b,0\)\);) s
+5 166 M
+(      else if \(result == Model.Result.EATEN\) output\(setBit\(b,1\)\);) s
+5 155 M
+(      else if \(result == Model.Result.RETRY\) output\(setBit\(b,2\)\);) s
+5 144 M
+(      else if \(result == Model.Result.INIT\)  output\(setBit\(b,3\)\);) s
+5 133 M
+(      else                                   nooutput\("delta"\); ) s
+5 122 M
+(  }) s
+5 111 M
+( /*) s
+5 100 M
+(  * bit operations) s
+5 89 M
+(  */) s
+5 78 M
+(  private static Boolean isBitSet\(byte b, int bit\) {) s
+5 67 M
+(    return \(b & \(1 << bit\)\) != 0;) s
+5 56 M
+(  }) s
+5 45 M
+(  private byte setBit\(byte b, int i\) {) s
+5 34 M
+(    b |= \(1 << i\);) s
+5 23 M
+(    return b;) s
+5 12 M
+(  }) s
+_R
+S
+%%Page: (2) 9
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 2 def
+/fname (practicum/TorXUI.java) def
+/fdir (practicum/) def
+/ftail (TorXUI.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 22:42:00 2012) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+( /*) s
+5 705 M
+(  * output routines) s
+5 694 M
+(  */) s
+5 683 M
+(  private void output\(byte b\) {) s
+5 672 M
+(    long now = System.currentTimeMillis\(\);) s
+5 661 M
+(    try { ) s
+5 650 M
+(      out.writeByte\(b\);) s
+5 639 M
+(      out.flush\(\);) s
+5 628 M
+(    } catch\(IOException e\) {) s
+5 617 M
+(      errln\("ioexception when writing output: "+e.getMessage\(\)\);) s
+5 606 M
+(      System.exit\(1\);) s
+5 595 M
+(    }) s
+5 584 M
+(    report\(now, "State: ["+ model.getState\(\) + "] yesoutput: "+String.format\("%x", b\)\);) s
+5 573 M
+(  }) s
+5 562 M
+(  private void input\(Byte b\) {) s
+5 551 M
+(    report\("State: ["+ model.getState\(\) + "] read: "+String.format\("%x", b\)\);) s
+5 540 M
+(  }) s
+5 529 M
+(}) s
+_R
+S
+%%Page: (1) 10
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (adapter/TorXConnector.java) def
+/fdir (adapter/) def
+/ftail (TorXConnector.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:48:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package adapter;) s
+5 694 M
+(/**) s
+5 683 M
+( * Interface offered by the TorX-specific adapter part that interacts with JTorX.) s
+5 672 M
+( * Note that an adapter consists of two parts:) s
+5 661 M
+( * <ol>) s
+5 650 M
+( * <li>a TorX-specific part: interacts with JTorX, implements this interface) s
+5 639 M
+( * <li>a SUT-specific part: interacts with the SUT, implements {@link IUTConnector}) s
+5 628 M
+( * </ol>) s
+5 617 M
+( * This interface allows the SUT-specific adapter part) s
+5 606 M
+( * to enqueue observations with the TorX-specific adapter part,) s
+5 595 M
+( * and to report to it that interaction with the system under test ended.) s
+5 584 M
+( */) s
+5 573 M
+(public interface TorXConnector {) s
+5 551 M
+(        /**) s
+5 540 M
+(         * Enqueues an observation to be handed over to JTorX.) s
+5 529 M
+(         * @param label         representation of the observation as model label) s
+5 518 M
+(         */) s
+5 507 M
+(        void enqueueObservation\(String label\);) s
+5 485 M
+(        /**) s
+5 474 M
+(         * Reports to the TorX-specific part) s
+5 463 M
+(         * that interaction with the system under test has ended.) s
+5 452 M
+(         * Typically this will be invoked by the SUT-specific adapter part) s
+5 441 M
+(         * when the system under test has taken initiative to end this interaction.) s
+5 430 M
+(         * Typically, the TorX-specific part will then decide to end the test run.) s
+5 419 M
+(         */) s
+5 408 M
+(        void eot\(\);) s
+5 397 M
+(}) s
+_R
+S
+%%Page: (1) 11
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (adapter/IUTConnector.java) def
+/fdir (adapter/) def
+/ftail (IUTConnector.java) def
+% User defined strings:
+/fmodstr (Mon Mar 19 14:46:00 2012) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package adapter;) s
+5 694 M
+(/**) s
+5 683 M
+( * Interface offered by the SUT-specific adapter part \(part that interacts with SUT\).) s
+5 672 M
+( * Note that an adapter consists of two parts:) s
+5 661 M
+( * <ol>) s
+5 650 M
+( * <li>a TorX-specific part: interacts with JTorX, implements {@link TorXConnector}) s
+5 639 M
+( * <li>a SUT-specific part: interacts with the SUT, implements this interface) s
+5 628 M
+( * </ol>) s
+5 617 M
+( * The TorX-specific adapter part uses an implementation of this interface) s
+5 606 M
+( * to \(try to\) apply stimuli to the system under test, and an implementation of this) s
+5 595 M
+( * interface will typically use the enqueueObservation function of the TorXConnector) s
+5 584 M
+( * interface to report observations.) s
+5 573 M
+( */) s
+5 551 M
+(public interface IUTConnector {) s
+5 529 M
+(        /**) s
+5 518 M
+(         * Try to apply given stimulus, given as model label, to the system under test.) s
+5 507 M
+(         * This will be invoked during the test run when a stimulus must be applied.) s
+5 496 M
+(         * It may not be possible to apply the given stimulus, for example because the) s
+5 485 M
+(         * label can not be mapped onto a concrete interaction with the SUT,) s
+5 474 M
+(         * or because the concrete interaction can not be performed.) s
+5 463 M
+(         * An example of the latter is when an exception is triggered by the write) s
+5 452 M
+(         * operation that should deliver the concrete simulus to the system under test.) s
+5 441 M
+(         * ) s
+5 430 M
+(         * @param label         the label to apply \(taken from the model\)) s
+5 419 M
+(         * @return      <code>true</code> if stimulus was applied;) s
+5 408 M
+(         *              <code>false</code> otherwise) s
+5 397 M
+(         */) s
+5 386 M
+(        boolean applyStimulus\(String label\);) s
+5 364 M
+(        /**) s
+5 353 M
+(         * Dispose of the system resources used by this IUTConnector.) s
+5 342 M
+(         * This will be invoked at the end of a test run.) s
+5 331 M
+(         */) s
+5 320 M
+(        void stop\(\);) s
+5 309 M
+(}) s
+_R
+S
+%%Page: (1) 12
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 1 def
+/fname (adapter/FWGCAdapter.java.template) def
+/fdir (adapter/) def
+/ftail (FWGCAdapter.java.template) def
+% User defined strings:
+/fmodstr (Tue Mar 19 13:18:45 2013) def
+/pagenumstr (1) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(package adapter;) s
+5 705 M
+(import java.io.InputStream;) s
+5 694 M
+(import java.io.OutputStream;) s
+5 683 M
+(import java.io.DataInputStream;) s
+5 672 M
+(import java.io.DataOutputStream;) s
+5 661 M
+(import java.io.BufferedReader;) s
+5 650 M
+(import java.io.InputStreamReader;) s
+5 639 M
+(import java.io.EOFException;) s
+5 628 M
+(import java.lang.ProcessBuilder;) s
+5 617 M
+(/**) s
+5 606 M
+( * This class implements the SUT-specific component of an adapter for) s
+5 595 M
+( * the farmer-cabbgage-goat-wolf program.) s
+5 584 M
+( * It uses an instance of {@link TorXAdapter} to handle the interaction with JTorX.) s
+5 573 M
+( * <p>) s
+5 562 M
+( * This SUT-specific part) s
+5 551 M
+( * <ul>) s
+5 540 M
+( * <li>is started as a separate process \(and thus it implements <code>main</code>\)) s
+5 529 M
+( * <li>starts the given command+args as the fcgw \(SUT\) program, and) s
+5 518 M
+( * <li>starts a reader thread, to read from the standard output of the command,) s
+5 507 M
+( *     to read responses from the SUT program) s
+5 496 M
+( * <li> starts a TorXAdapter, to handle interaction with JTorX;) s
+5 485 M
+( *     this SUT-specific part implements the {@link IUTConnector} interface,) s
+5 474 M
+( *     such that the TorXAdapter can ask this SUT-specific part to apply stimuli.) s
+5 463 M
+( * </ul>) s
+5 452 M
+( */) s
+5 441 M
+(public class FWGCAdapter implements IUTConnector {) s
+5 430 M
+(  public static long timeOut = 5000;) s
+5 408 M
+(  public static void main\(String[] args\) {) s
+5 397 M
+(    new FWGCAdapter\(timeOut, args\);) s
+5 386 M
+(  }) s
+5 375 M
+(  private DataOutputStream iutIn;) s
+5 364 M
+(  private IUTReader iutReader;) s
+5 353 M
+(  private ErrReader errReader;) s
+5 342 M
+(  private TorXAdapter torxAdapter;) s
+5 331 M
+(  /**) s
+5 320 M
+(   * Create an instance of TorXAdapter \(with given <code>timeOut</code>\)) s
+5 309 M
+(   * Start program given in <code>args</code> as a separate process) s
+5 298 M
+(   * \(e.g. using ProcessBuilder, see import above\)) s
+5 287 M
+(   * and attach an IUTReader to its standard output \(and start it\)) s
+5 276 M
+(   * and attach an ErrReader to its standard error \(and start it\)) s
+5 265 M
+(   * and setup variable <code>iutIn</code> so we can use it to) s
+5 254 M
+(   * write to the standard input of the program that we started.) s
+5 243 M
+(   * When starting the program fails, catch the exception, write a message) s
+5 232 M
+(   * to standard error and exit the adapter program with status 1.) s
+5 221 M
+(   * Otherwise, start the TorXAdapter instance.) s
+5 210 M
+(   */) s
+5 199 M
+(  public FWGCAdapter\(long timeOut, String[] args\) {) s
+5 177 M
+(        // implement this method) s
+5 166 M
+(  }) s
+5 155 M
+(  /**) s
+5 144 M
+(   * Apply stimulus represented by given label string;) s
+5 133 M
+(   * return true when stimulus was applied, or false otherwise.) s
+5 122 M
+(   */) s
+5 111 M
+(  public boolean applyStimulus\(String label\) {) s
+5 100 M
+(    System.err.println\("applyStim got label: "+label\);) s
+5 89 M
+(    try {) s
+5 78 M
+(      byte b = encode\(label\);) s
+5 67 M
+(      System.err.printf\("applyStim writing %x: \\n", b\);) s
+5 56 M
+(      return apply\(b\);) s
+5 45 M
+(    } catch\(EncodeError e\) {) s
+5 34 M
+(      System.err.println\("applyStim encoding exception: "+e.getMessage\(\)\);) s
+5 23 M
+(      return false;) s
+5 12 M
+(    }) s
+_R
+S
+%%Page: (2) 13
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 2 def
+/fname (adapter/FWGCAdapter.java.template) def
+/fdir (adapter/) def
+/ftail (FWGCAdapter.java.template) def
+% User defined strings:
+/fmodstr (Tue Mar 19 13:18:45 2013) def
+/pagenumstr (2) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 716 M
+(  }) s
+5 705 M
+(  /**) s
+5 694 M
+(   * Encode the given label string to a byte; throw EncodeError for unknown label.) s
+5 683 M
+(   */) s
+5 672 M
+(  private byte encode\(String label\) throws EncodeError {) s
+5 650 M
+(        // implement this method) s
+5 639 M
+(  }) s
+5 628 M
+(  /**) s
+5 617 M
+(   * Decode the given byte to a label string; return null for unknown byte.) s
+5 606 M
+(   */) s
+5 595 M
+(  private String decode\(byte b\) {) s
+5 573 M
+(        // implement this method) s
+5 562 M
+(  }) s
+5 551 M
+(  /**) s
+5 540 M
+(   * Apply stimulus byte; catch possible exception;) s
+5 529 M
+(   * return true when stimulus was applied, or false otherwise.) s
+5 518 M
+(   */) s
+5 507 M
+(  private boolean apply\(byte b\) {) s
+5 485 M
+(        // implement this method) s
+5 474 M
+(  }) s
+5 463 M
+(  /**) s
+5 452 M
+(   * This is invoked when we can stop testing, so we simply exit.) s
+5 441 M
+(   */) s
+5 430 M
+(  public void stop\(\) {) s
+5 419 M
+(    //  should we notify iutReader to finish \(return\)?) s
+5 408 M
+(    System.err.println\("got request to stop"\);) s
+5 397 M
+(    System.exit\(0\);) s
+5 386 M
+(  }) s
+5 353 M
+( /**) s
+5 342 M
+(  * Reader for the standard error of the SUT.) s
+5 331 M
+(  * Reads lines of text, and writes the to standard error.) s
+5 320 M
+(  */) s
+5 309 M
+(  public class ErrReader extends Thread {) s
+5 298 M
+(    private BufferedReader r;) s
+5 287 M
+(    private TorXConnector torxConnector;) s
+5 265 M
+(    public ErrReader\(TorXConnector torxConnector, InputStream is\) {) s
+5 254 M
+(      // just read lines of text, and we use a BufferedReader to help us.) s
+5 243 M
+(      // for other IUTs you may have to do something else) s
+5 232 M
+(      this.r = new BufferedReader\(new InputStreamReader\(is\)\);) s
+5 221 M
+(      this.torxConnector = torxConnector;) s
+5 210 M
+(    }) s
+5 199 M
+(    public void run\(\) {) s
+5 188 M
+(      String s = null;) s
+5 177 M
+(      // we forever try to read a line and write it to standard error;) s
+5 166 M
+(      // for other IUTs you may have to do something else) s
+5 155 M
+(      while\(true\) {) s
+5 144 M
+(        try {) s
+5 133 M
+(          s = r.readLine\(\);) s
+5 122 M
+(          if \(s==null\) {) s
+5 111 M
+(            System.err.println\("errReader read eof"\);) s
+5 100 M
+(            return;) s
+5 89 M
+(          }) s
+5 78 M
+(          System.err.println\("err: "+s\);) s
+5 67 M
+(        } catch\(Exception e\) {) s
+5 56 M
+(          System.err.println\("iutReader got exception: "+e.getMessage\(\)\);) s
+5 45 M
+(        }) s
+5 34 M
+(      }) s
+5 23 M
+(    }) s
+5 12 M
+(  }) s
+_R
+S
+%%Page: (3) 14
+%%BeginPageSetup
+_S
+38 24 translate
+/pagenum 3 def
+/fname (adapter/FWGCAdapter.java.template) def
+/fdir (adapter/) def
+/ftail (FWGCAdapter.java.template) def
+% User defined strings:
+/fmodstr (Tue Mar 19 13:18:45 2013) def
+/pagenumstr (3) def
+/user_header_p false def
+/user_footer_p false def
+%%EndPageSetup
+do_header
+5 705 M
+( /**) s
+5 694 M
+(  * Reader for the standard output of the SUT.) s
+5 683 M
+(  * Reads bytes, decodes them to labels, and enqueus) s
+5 672 M
+(  * the labels at the TorXConnector.) s
+5 661 M
+(  */) s
+5 650 M
+(  public class IUTReader extends Thread {) s
+5 639 M
+(    private DataInputStream r;) s
+5 628 M
+(    private TorXConnector torxConnector;) s
+5 606 M
+(    public IUTReader\(TorXConnector torxConnector, InputStream is\) {) s
+5 595 M
+(      // for the example we just read bytes) s
+5 584 M
+(      this.r = new DataInputStream\(is\);) s
+5 573 M
+(      this.torxConnector = torxConnector;) s
+5 562 M
+(    }) s
+5 551 M
+(    public void run\(\) {) s
+5 540 M
+(      byte b = 0;) s
+5 529 M
+(      // we forever try to read a byte and decode it into a model label) s
+5 518 M
+(      // for other IUTs you may have to do something else) s
+5 507 M
+(      while\(true\) {) s
+5 496 M
+(        try {) s
+5 485 M
+(          b = r.readByte\(\);) s
+5 474 M
+(          String label = decode\(b\);) s
+5 463 M
+(          if\(label!=null\)) s
+5 452 M
+(            torxConnector.enqueueObservation\(label\);) s
+5 441 M
+(          else) s
+5 430 M
+(            System.err.println\("iutReader got unexpected observation: "\);) s
+5 419 M
+(        } catch\(EOFException e\) {) s
+5 408 M
+(          System.err.println\("iutReader got eof exception: "+e.getMessage\(\)\);) s
+5 397 M
+(          torxConnector.eot\(\);) s
+5 386 M
+(          return;) s
+5 375 M
+(        } catch\(Exception e\) {) s
+5 364 M
+(          System.err.println\("iutReader got exception: "+e.getMessage\(\)\);) s
+5 353 M
+(        }) s
+5 342 M
+(      }) s
+5 331 M
+(    }) s
+5 320 M
+(  }) s
+5 298 M
+(}) s
+5 287 M
+(/**) s
+5 276 M
+( * Exception that we throw when we have to encode an unknown label) s
+5 265 M
+( */) s
+5 254 M
+(class EncodeError extends Exception {) s
+5 243 M
+(  public EncodeError\(String error\) {) s
+5 232 M
+(    super\(error\);) s
+5 221 M
+(  }) s
+5 210 M
+(}) s
+_R
+S
+%%Trailer
+%%Pages: 14
+%%DocumentNeededResources: font Courier-Bold Courier 
+%%EOF
