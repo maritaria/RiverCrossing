@@ -1,4 +1,4 @@
-package com.company;
+package adapter;
 
 /**
  * Interface offered by the SUT-specific adapter part (part that interacts with SUT).

@@ -1,4 +1,4 @@
-package com.company;
+package adapter;
 
 import java.io.InputStream;
 import java.io.OutputStream;

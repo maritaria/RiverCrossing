@@ -1,4 +1,4 @@
-package com.company;
+package adapter;
 
 public class Main {
     public static long timeOut = 5000;

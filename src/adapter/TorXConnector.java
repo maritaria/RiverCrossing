@@ -1,4 +1,4 @@
-package com.company;
+package adapter;
 
 /**
  * Interface offered by the TorX-specific adapter part that interacts with JTorX.
